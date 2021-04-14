@@ -1,0 +1,100 @@
+html {
+  box-sizing: border-box;
+  font-family: minecraftiaregular;
+  /*background-image: url('../img/background.jpg');*/
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/*html,
+body {
+  position: relative;
+  font-family: $font-pixel;
+}*/
+
+body {
+  overflow: auto;
+}
+
+.app-container {
+  height: 100%;
+  width: 90%;
+  margin: 0 auto;
+  padding: 0;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h2 {
+  font-size: 0.8em;
+  padding-right: 1em;
+  display: inline;
+  position: relative;
+  top: -0.9em;
+}
+
+h3 {
+  font-size: 1em;
+}
+
+input[type=text] {
+  background-color: white;
+  /*background-image: url('searchicon.png');*/
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+  width: 90%;
+  height: 100px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+  font-family: minecraftiaregular;
+}
+
+input[type=submit], input[type=reset] {
+  width: 90%;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+  font-family: minecraftiaregular;
+  background-color: #333
+}
+
+input[type=submit]:hover {
+  background-color: #111;
+}
+
+
+.content-mr-auto.ml-auto {
+  text-align: center;
+}
+
+.col-md-3.mb-3 {
+  flex: 5%;
+  /*padding: 0 4px;*/
+  display:inline-block;
+  text-align: center;
+}
+
+
+.row.text-center {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+.row {
+  text-align: center;
+}
