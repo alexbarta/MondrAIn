@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import shiba from '../img/shiba.jpeg'
+import shiba from '../img/dogecoin.jpeg'
 
 const { AwesomeQR } = require("awesome-qr");
 

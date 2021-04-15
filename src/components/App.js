@@ -5,7 +5,6 @@ import {getEthAccounts, getNetworkData, getAbi, getContractAddress, getContract,
 import Mondrian from '../abis/Mondrian.json';
 import { getQRBuffer } from './QRcode';
 
-
 function waitForAccount() {
   console.log("checking account presence:" + window.ethereum._state.accounts)
   if(!window.ethereum._state.accounts[0]) {
@@ -32,7 +31,7 @@ class App extends Component {
       contract: null,
       totalSupply: 0,
       tokens: [],
-      buffer: ''
+      QRBuffers: []
     }
     //this.loadBlockchainData = loadBlockchainData
     this.ethConnection = this.ethConnection.bind(this)
@@ -55,24 +54,22 @@ class App extends Component {
         let totalSupply = await getTotalSupply(contract)
         this.setState({ totalSupply })
         //console.log("contract:" + contractAddress)
+        var _tokens = []
+        var _tokenQR = []
         for (var i = 1; i <= this.state.totalSupply; i++) {
           const token = await contract.methods.tokens(i - 1).call()
-          //console.log(this.state.tokens.indexOf(token))
+          const qr = await getQRBuffer(token)
           if(this.state.tokens.indexOf(token) == -1){
-              this.setState({
-                tokens: [...this.state.tokens, token]
-            })
+            _tokens.push(token)
+            _tokenQR.push(qr)
           }
-        console.log("tokens:" + JSON.stringify(this.state.tokens))
-        break;
         }
-        console.log("contract:" + JSON.stringify(contract.methods))
+        this.setState( { tokens: _tokens, QRBuffers: _tokenQR  } )
       } else {
         window.alert('Smart contract not deployed selected Metamask network. Rinkeby only for now :(')
       }
     }
   }
-
 
   mint = (token) => {
     this.state.contract.methods.mint(token).send({ from: this.state.account })
@@ -83,9 +80,7 @@ class App extends Component {
     })
   }
 
-
   render() {
-    console.log("ciao") 
 
     return (
       <div> 
@@ -95,32 +90,18 @@ class App extends Component {
             <TokenMinter account={this.state.account} mint={this.mint} />
             <h1>Your Tokens</h1>
             <div className="row text-center">
-            { 
-            /*  this.state.tokens.map((token, key) => {
-            //        //getQRBuffer(token).then(data => this.setState({ buffer: data }))
-                    let qr  = await getQRBuffer(token)
-                    console.log("nel loop")
+            {this.state.QRBuffers.map((QR, key) => {
               return(
                 <div key={key} className="col-md-3 mb-3" includeMargin="true">
+                   <img src={QR} alt="loading"/>
                 </div>)
-          })*/}
+          })}
           </div>
           </div>
-          {/*<div className="row text-center">
-            { this.state.tokens.map((token, key) => {
-              return(
-                <div key={key} className="col-md-3 mb-3">
-                  <QRCode value={token}/>
-                </div>
-              )
-            })}
-          </div>*/}
         </div>
       </div>
     );
   }
 }
-
-//<img src={this.state.buffer} alt="loading"/>
 
 export default App;
