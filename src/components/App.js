@@ -30,8 +30,9 @@ class App extends Component {
       account: '',
       contract: null,
       totalSupply: 0,
-      tokens: [],
-      QRBuffers: []
+      tokenURI: [],
+      baseURI: 'https://ipfs.infura.io/ipfs/'
+
     }
     //this.loadBlockchainData = loadBlockchainData
     this.ethConnection = this.ethConnection.bind(this)
@@ -53,26 +54,35 @@ class App extends Component {
         this.setState({ contract })
         let totalSupply = await getTotalSupply(contract)
         this.setState({ totalSupply })
-        //console.log("contract:" + contractAddress)
-        var _tokens = []
-        var _tokenQR = []
+        console.log("contract:" + contractAddress)
+        //var _tokens = []
+        var _tokenURI = []
         for (var i = 1; i <= this.state.totalSupply; i++) {
           const token = await contract.methods.tokens(i - 1).call()
-          const qr = await getQRBuffer(token)
+          const tokenId = await contract.methods.getTokenId(token).call()
+          const metadataURI = await contract.methods.tokenURI(tokenId).call()
+          const tokenURIFetchResponse = await fetch(this.state.baseURI + metadataURI)
+          const tokenURIMetadataJson = await tokenURIFetchResponse.json()
+          const tokenURI = tokenURIMetadataJson.image
+          _tokenURI.push(tokenURI)
+          console.log("token:", token, tokenId, this.state.baseURI + metadataURI , tokenURI)
+          //_tokenURI.push(tokenURI.image)
+          /*const qr = await getQRBuffer(token)
           if(this.state.tokens.indexOf(token) == -1){
             _tokens.push(token)
             _tokenQR.push(qr)
-          }
+          }*/
         }
-        this.setState( { tokens: _tokens, QRBuffers: _tokenQR  } )
+        //this.setState( { tokens: _tokens, QRBuffers: _tokenQR  } )
+        this.setState({ tokenURI: _tokenURI })
       } else {
         window.alert('Smart contract not deployed selected Metamask network. Rinkeby only for now :(')
       }
     }
   }
 
-  mint = (token) => {
-    this.state.contract.methods.mint(token).send({ from: this.state.account })
+  mint = (token, ipfsHash) => {
+    this.state.contract.methods.mint(token, ipfsHash).send({ from: this.state.account })
     .once('receipt', (receipt) => {
       this.setState({
         tokens: [...this.state.tokens, token]
@@ -90,10 +100,11 @@ class App extends Component {
             <TokenMinter account={this.state.account} mint={this.mint} />
             <h1>Your Tokens</h1>
             <div className="row text-center">
-            {this.state.QRBuffers.map((QR, key) => {
+            {this.state.tokenURI.map((URI, key) => {
+              console.log(URI)
               return(
                 <div key={key} className="col-md-3 mb-3" includeMargin="true">
-                   <img src={QR} alt="loading"/>
+                   <img src={URI} alt="loading"/>
                 </div>)
           })}
           </div>
