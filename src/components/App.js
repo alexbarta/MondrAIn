@@ -1,9 +1,9 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component } from 'react';
+import Modal from './Modal';
 import Navbar from './Navbar';
 import TokenMinter from './TokenMinter'
 import {getEthAccounts, getNetworkData, getAbi, getContractAddress, getContract, getTotalSupply} from './WalletHandler';
 import Mondrian from '../abis/Mondrian.json';
-import { getQRBuffer } from './QRcode';
 
 function waitForAccount() {
   console.log("checking account presence:" + window.ethereum._state.accounts)
@@ -27,6 +27,8 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      isWalletPresent: false,
+      isWalletConnected: false,
       account: '',
       contract: null,
       totalSupply: 0,
@@ -34,10 +36,8 @@ class App extends Component {
       baseURI: 'https://ipfs.infura.io/ipfs/'
 
     }
-    //this.loadBlockchainData = loadBlockchainData
     this.ethConnection = this.ethConnection.bind(this)
   }
-
   
   ethConnection = async() => {
     let windowEthereumExists = checkWindowEthereum()
@@ -66,14 +66,7 @@ class App extends Component {
           const tokenURI = tokenURIMetadataJson.image
           _tokenURI.push(tokenURI)
           console.log("token:", token, tokenId, this.state.baseURI + metadataURI , tokenURI)
-          //_tokenURI.push(tokenURI.image)
-          /*const qr = await getQRBuffer(token)
-          if(this.state.tokens.indexOf(token) == -1){
-            _tokens.push(token)
-            _tokenQR.push(qr)
-          }*/
         }
-        //this.setState( { tokens: _tokens, QRBuffers: _tokenQR  } )
         this.setState({ tokenURI: _tokenURI })
       } else {
         window.alert('Smart contract not deployed selected Metamask network. Rinkeby only for now :(')
