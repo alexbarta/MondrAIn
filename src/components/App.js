@@ -15,15 +15,6 @@ function waitForAccount() {
   }
 }
 
-function checkWindowEthereum() {
-  if (!window.ethereum) {
-    window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
-    return false
-  } else {
-    return true
-  }
-}
-
 class App extends Component {
 
   constructor(props) {
@@ -71,8 +62,8 @@ class App extends Component {
 
   loadIPFSImageData = async () => {
     var tokens = []
-
-    for (var i = 1; i <= this.state.totalSupply; i++) {
+    var numberOfSlides = 3
+    for (var i = this.state.totalSupply - (numberOfSlides - 1) ; i <= this.state.totalSupply; i++) { //show last numberOfSlides 
       const token = await this.state.contract.methods.tokens(i - 1).call()
       const tokenId = await this.state.contract.methods.getTokenId(token).call()
       const metadataURI = await this.state.contract.methods.tokenURI(tokenId).call()
@@ -95,11 +86,7 @@ class App extends Component {
   }
 
   getAccount = async () => {
-    let windowEthereumExists = checkWindowEthereum()
-    //console.log("isWalletConnected pre:", this.state.isWalletConnected)
     if(this.state.isWalletPresent) { 
-
-    //if(windowEthereumExists) { 
       waitForAccount()
       let accounts = await getEthAccounts()
       this.setState({ account: accounts[0] })
@@ -122,7 +109,6 @@ class App extends Component {
 
 
     return (
-      <>
       <div> 
         <Navbar handler={this.getAccount} address={this.state.account}/>
         <div className="container-fluid mt-5">
@@ -141,9 +127,8 @@ class App extends Component {
           </div>
           </div>
         </div>
+        <Social />
       </div>
-      <Social />
-      </>
     );
   }
 }
