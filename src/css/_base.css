@@ -10,12 +10,6 @@ html {
   box-sizing: inherit;
 }
 
-/*html,
-body {
-  position: relative;
-  font-family: $font-pixel;
-}*/
-
 body {
   overflow: auto;
 }
@@ -83,9 +77,9 @@ input[type=submit]:hover {
 
 .col-md-3.mb-3 {
   flex: 5%;
-  /*padding: 0 4px;*/
   display:inline-block;
   text-align: center;
+  cursor: pointer;
 }
 
 

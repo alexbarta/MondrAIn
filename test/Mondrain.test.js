@@ -2,7 +2,7 @@ const chai = require('chai')
 const expect = chai.expect
 chai.use(require('chai-as-promised'))
 
-const Mondrian = artifacts.require('./Mondrian.sol')
+const Mondrain = artifacts.require('./Mondrain.sol')
 
 function makeRandomString(length) {
     var result           = [];
@@ -15,16 +15,16 @@ function makeRandomString(length) {
    return result.join('');
 }
 
-contract('Mondrian', (accounts) => {
+contract('Mondrain', (accounts) => {
     let contract
 
     before(async() => {
-        contract = await Mondrian.deployed()
+        contract = await Mondrain.deployed()
     })
 
     describe('deployment', async() => {
         it('deploys successfully',  async () => {
-            contract = await Mondrian.deployed()
+            contract = await Mondrain.deployed()
             const address = contract.address
             console.log(address)
             chai.assert.notEqual(address, 0x0)
@@ -34,11 +34,11 @@ contract('Mondrian', (accounts) => {
         })
         it('has a name', async() => {
             const name = await contract.name()
-            chai.assert.equal(name, 'Stijl')
+            chai.assert.equal(name, 'quadro')
         })
         it('has a symbol', async() => {
             const symbol = await contract.symbol()
-            chai.assert.equal(symbol, 'STIJL')
+            chai.assert.equal(symbol, 'QUADRO')
         })
     })
 
@@ -70,8 +70,8 @@ contract('Mondrian', (accounts) => {
 
         it('Fail on empty chars at beginning or at the end', async () => {
             // Mint a token that contains empty chars before or after
-            let emptySpacerandomString = " " + makeRandomString(10);
-            await expect(contract.mint(emptySpacerandomString, "{}")).to.be.rejected;
+            let emptySpaceRandomString = " " + makeRandomString(10);
+            await expect(contract.mint(emptySpaceRandomString, "{}")).to.be.rejected;
             let randomStringEmptySpace = makeRandomString(10) + " ";
             await expect(contract.mint(randomStringEmptySpace, "{}")).to.be.rejected;
         })

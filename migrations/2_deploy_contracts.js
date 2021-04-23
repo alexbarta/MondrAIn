@@ -1,5 +1,5 @@
-const Mondrian = artifacts.require("Mondrian");
+const Mondrain = artifacts.require("Mondrain");
 
 module.exports = function (deployer) {
-  deployer.deploy(Mondrian);
+  deployer.deploy(Mondrain);
 };

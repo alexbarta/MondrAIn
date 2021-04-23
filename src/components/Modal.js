@@ -2,10 +2,6 @@ import React from 'react';
 
 const Modal = props => {
   
-    /*function displayInfo () {
-        return <div className="modal-info">This is Modal A</div>
-    }*/
-  
     function closeModal (e) {
       e.stopPropagation()
       props.closeModal()

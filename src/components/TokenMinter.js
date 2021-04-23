@@ -30,10 +30,10 @@ class TokenMinter extends Component {
       return(
         <main role="main" className="col-lg-12 d-flex text-center">
         <div className="content-mr-auto ml-auto">
-          <h1>Abstract Your Ideas</h1>
+          <h1>Abstract your words</h1>
           <form onSubmit={async (event) => {
             event.preventDefault()
-            if (this.props.account) {
+            if (this.props.isWalletConnected) {
               const token = this.token.value
               console.log("Generating QR code")
               const qr =  await getQRBuffer(token)

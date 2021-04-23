@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import Modal from './Modal';
 import Navbar from './Navbar';
-import TokenMinter from './TokenMinter'
+import TokenMinter from './TokenMinter';
+import Social from './Social';
 import {getEthAccounts, getNetworkData, getAbi, getContractAddress, getContract, getTotalSupply} from './WalletHandler';
-import Mondrian from '../abis/Mondrian.json';
+import Mondrain from '../abis/Mondrain.json';
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from 'react-responsive-carousel';
 
 function waitForAccount() {
   console.log("checking account presence:" + window.ethereum._state.accounts)
@@ -23,55 +26,86 @@ function checkWindowEthereum() {
 
 class App extends Component {
 
-
   constructor(props) {
     super(props)
     this.state = {
-      isWalletPresent: false,
+      isWalletPresent: true,
       isWalletConnected: false,
+      isWrongNetwork: false,
       account: '',
       contract: null,
+      contractAddress: '',
       totalSupply: 0,
-      tokenURI: [],
-      baseURI: 'https://ipfs.infura.io/ipfs/'
-
+      tokens: [],
+      baseURI: 'https://ipfs.infura.io/ipfs/',
+      openSeaBaseURI: 'https://testnets.opensea.io/assets'
     }
-    this.ethConnection = this.ethConnection.bind(this)
   }
-  
-  ethConnection = async() => {
+
+  checkWalletPresence = () => {
+    if (!window.ethereum) {
+      this.setState({ isWalletPresent : false })
+      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+    }
+  }
+
+  loadBlockchainData = async () => { 
+    const networkData = await getNetworkData(Mondrain)
+    console.log(networkData)
+    if(!networkData) {
+        this.setState({ isWrongNetwork : true })
+        window.alert('Smart contract not deployed selected Metamask network. Rinkeby only for now :(')
+        return false
+    }
+    const abi = getAbi(Mondrain)
+    const contractAddress = getContractAddress(networkData)
+    const contract = getContract(abi, contractAddress)
+    const totalSupply = await getTotalSupply(contract)
+    this.setState({ contractAddress })
+    this.setState({ contract })
+    this.setState({ totalSupply })
+    console.log("contract:" + contractAddress)
+    console.log("totalSupply:" + totalSupply)
+    return true
+  };
+
+  loadIPFSImageData = async () => {
+    var tokens = []
+
+    for (var i = 1; i <= this.state.totalSupply; i++) {
+      const token = await this.state.contract.methods.tokens(i - 1).call()
+      const tokenId = await this.state.contract.methods.getTokenId(token).call()
+      const metadataURI = await this.state.contract.methods.tokenURI(tokenId).call()
+      const tokenURIFetchResponse = await fetch(this.state.baseURI + metadataURI)
+      const tokenURIMetadataJson = await tokenURIFetchResponse.json()
+      const tokenURI = tokenURIMetadataJson.image
+      tokens.push({value: token, URI: tokenURI, openseaURI: this.state.openSeaBaseURI + '/' + this.state.contractAddress + '/' + tokenId})
+      console.log("token:", token, tokenId, this.state.baseURI + metadataURI , tokenURI)
+    }
+
+    this.setState({ tokens: tokens })
+  }
+
+  async componentDidMount() {
+    console.log("pre isWalletPresent:",  this.state.isWalletPresent)
+    this.checkWalletPresence()
+    console.log("post isWalletPresent:", this.state.isWalletPresent)
+    if (this.state.isWalletPresent) await this.loadBlockchainData()
+    if (this.state.contract && this.state.totalSupply) await this.loadIPFSImageData()
+  }
+
+  getAccount = async () => {
     let windowEthereumExists = checkWindowEthereum()
-    if(windowEthereumExists) { 
+    //console.log("isWalletConnected pre:", this.state.isWalletConnected)
+    if(this.state.isWalletPresent) { 
+
+    //if(windowEthereumExists) { 
       waitForAccount()
       let accounts = await getEthAccounts()
       this.setState({ account: accounts[0] })
-      let networkData = await getNetworkData(Mondrian)
-      //console.log("network data:" + networkData)
-      if(networkData) {
-        let abi = getAbi(Mondrian)
-        let contractAddress = getContractAddress(networkData)
-        let contract = getContract(abi, contractAddress)
-        this.setState({ contract })
-        let totalSupply = await getTotalSupply(contract)
-        this.setState({ totalSupply })
-        console.log("contract:" + contractAddress)
-        //var _tokens = []
-        var _tokenURI = []
-        for (var i = 1; i <= this.state.totalSupply; i++) {
-          const token = await contract.methods.tokens(i - 1).call()
-          const tokenId = await contract.methods.getTokenId(token).call()
-          const metadataURI = await contract.methods.tokenURI(tokenId).call()
-          const tokenURIFetchResponse = await fetch(this.state.baseURI + metadataURI)
-          const tokenURIMetadataJson = await tokenURIFetchResponse.json()
-          const tokenURI = tokenURIMetadataJson.image
-          _tokenURI.push(tokenURI)
-          console.log("token:", token, tokenId, this.state.baseURI + metadataURI , tokenURI)
-        }
-        this.setState({ tokenURI: _tokenURI })
-      } else {
-        window.alert('Smart contract not deployed selected Metamask network. Rinkeby only for now :(')
-      }
+      this.setState({ isWalletConnected: true })
     }
+    console.log("isWalletConnected post:", this.state.isWalletConnected)
   }
 
   mint = (token, ipfsHash) => {
@@ -83,27 +117,33 @@ class App extends Component {
     })
   }
 
+
   render() {
 
+
     return (
+      <>
       <div> 
-        <Navbar handler={this.ethConnection} address={this.state.account}/>
+        <Navbar handler={this.getAccount} address={this.state.account}/>
         <div className="container-fluid mt-5">
           <div className="row">
-            <TokenMinter account={this.state.account} mint={this.mint} />
-            <h1>Your Tokens</h1>
+            <TokenMinter isWalletConnected={this.state.isWalletConnected} mint={this.mint} />
+            <h1>Last Minted Tokens</h1>
             <div className="row text-center">
-            {this.state.tokenURI.map((URI, key) => {
-              console.log(URI)
+            <Carousel>
+            {this.state.tokens.map((token, key) => {
               return(
-                <div key={key} className="col-md-3 mb-3" includeMargin="true">
-                   <img src={URI} alt="loading"/>
+                <div key={key} className="col-md-3 mb-3" includeMargin="true" onClick={() => window.open(token.openseaURI)}>
+                   <img src={token.URI} alt="loading"/>
                 </div>)
-          })}
+             })}
+           </Carousel>
           </div>
           </div>
         </div>
       </div>
+      <Social />
+      </>
     );
   }
 }

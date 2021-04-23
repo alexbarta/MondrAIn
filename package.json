@@ -13,6 +13,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-brands-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "@openzeppelin/contracts": "^3.4.1",
     "@truffle/hdwallet-provider": "^1.2.4",
     "awesome-qr": "^2.1.4-rc.0",
@@ -26,6 +29,7 @@
   },
   "devDependencies": {
     "@awesomeqr/react": "^0.1.2-rc.0",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@nomiclabs/buidler": "^1.4.8",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.1.0",
@@ -37,6 +41,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-native": "^0.64.0",
+    "react-responsive-carousel": "^3.2.18",
     "web-vitals": "^1.1.0",
     "webpack": "^4.44.2",
     "webpack-cli": "^4.5.0"

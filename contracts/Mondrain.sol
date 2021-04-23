@@ -3,12 +3,12 @@ pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-contract Mondrian is ERC721 {
+contract Mondrain is ERC721 {
   
   string[] public tokens;
   mapping(string => uint) _tokenId;
 
-  constructor() public ERC721("Stijl", "STIJL") {}
+  constructor() public ERC721("quadro", "QUADRO") {}
   
   function mint(string memory _token, string memory _tokenURI) public {
     bytes memory b = bytes(_token);
