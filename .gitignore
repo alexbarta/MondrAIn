@@ -1,5 +1,4 @@
 node_modules/
 build/contracts/*
-src/abis/*
 .DS_Store
 .secret
