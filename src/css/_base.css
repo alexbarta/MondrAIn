@@ -1,7 +1,7 @@
 html {
   box-sizing: border-box;
   font-family: minecraftiaregular;
-  /*background-image: url('../img/background.jpg');*/
+  background-image: url('../img/background.svg');
 }
 
 *,
@@ -22,7 +22,10 @@ body {
 }
 
 h1 {
-  font-size: 2em;
+  font-size: 2.2em;
+  /*color:#111;
+  background-color: #fff transparent;
+  margin: auto;*/
 }
 
 h2 {
@@ -39,7 +42,6 @@ h3 {
 
 input[type=text] {
   background-color: white;
-  /*background-image: url('searchicon.png');*/
   background-position: 10px 10px;
   background-repeat: no-repeat;
   width: 90%;
@@ -54,6 +56,7 @@ input[type=text] {
 }
 
 input[type=submit], input[type=reset] {
+  font-size: 2.5em;
   width: 90%;
   border: none;
   color: white;
@@ -63,7 +66,7 @@ input[type=submit], input[type=reset] {
   margin: 4px 2px;
   cursor: pointer;
   font-family: minecraftiaregular;
-  background-color: #333
+  background-color: blue;
 }
 
 input[type=submit]:hover {
@@ -73,22 +76,17 @@ input[type=submit]:hover {
 
 .content-mr-auto.ml-auto {
   text-align: center;
-}
-
-.col-md-3.mb-3 {
-  flex: 5%;
-  display:inline-block;
-  text-align: center;
-  cursor: pointer;
-}
-
-
-.row.text-center {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0 4px;
+  width: 25%;
+  height: auto ;
+  background-color: rgb(255, 247, 0) ;
+  margin: auto;
+  opacity: 0.9;
+  border: 5px rgb(255, 247, 0);
 }
 
 .row {
   text-align: center;
+}
+
+.container-fluid.mt-5 {
 }

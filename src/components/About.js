@@ -4,7 +4,7 @@ class About extends Component {
   render() {
   return (
     <div className="about">
-      <h1>MondrAIn</h1>
+      <h1>MondrAIn Project</h1>
       <p>
       Our project aims to revolutionise how digital content and messages are shared and protected in the digital world. 
       Here we allow users to convert any text (e.g. from a single word to an entire poem) into colourful and artistic QRcodes 

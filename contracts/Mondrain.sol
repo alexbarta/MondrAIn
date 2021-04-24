@@ -8,7 +8,9 @@ contract Mondrain is ERC721 {
   string[] public tokens;
   mapping(string => uint) _tokenId;
 
-  constructor() public ERC721("quadro", "QUADRO") {}
+  constructor() public ERC721("quadro", "QUADRO") {
+    _setBaseURI("https://ipfs.infura.io/ipfs/");
+  }
   
   function mint(string memory _token, string memory _tokenURI) public {
     bytes memory b = bytes(_token);

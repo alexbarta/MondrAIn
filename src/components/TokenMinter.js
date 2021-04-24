@@ -37,7 +37,7 @@ class TokenMinter extends Component {
               const token = this.token.value
               console.log("Generating QR code")
               const qr =  await getQRBuffer(token)
-              console.log("Generated QR code:" + qr.split(",")[1])
+              console.log("Generated QR code")
               var QRblob = b64toBlob(qr.split(",")[1], "image/png");
               console.log("Saving QR on ipfs")
               ipfs.add(QRblob, (error, result) => {
@@ -49,11 +49,11 @@ class TokenMinter extends Component {
                 var metadataHashTable = {}
                 metadataHashTable.name = this.token.value
                 metadataHashTable.description = "QR code representing: " + this.token.value
-                metadataHashTable.image = "https://ipfs.infura.io/ipfs/" + result[0].hash
+                metadataHashTable.image = result[0].hash
                 metadataHashTable.attributes = []
                 console.log("Generated hash table:" + JSON.stringify(metadataHashTable))
                 ipfs.add(JSON.stringify(metadataHashTable), (error,result) => {
-                  console.log('Ipfs metadata result', result[0].hash)
+                  console.log('Ipfs metadata result', "https://ipfs.infura.io/ipfs/" + result[0].hash)
                   if(error) {
                     console.error(error)
                     return
@@ -74,7 +74,7 @@ class TokenMinter extends Component {
             <input
               type='submit'
               className='btn btn-block btn-primary'
-              value='I WANt My T0KEnZ N0w!'
+              value='Mint It!'
             />
           </form>
         </div>
