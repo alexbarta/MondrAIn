@@ -25,7 +25,7 @@ class Social extends Component {
                <a href="https://github.com/alexbarta/MondrAIn" className="Github social">
                     <FontAwesomeIcon icon={faGithub} size="2x" />
                </a>
-               <a href="https://rinkeby.etherscan.io/address/0x8Da3810ec246d519e33F1905bc5f34191B60bf07" className="Contract social">
+               <a href="https://explorer-mumbai.maticvigil.com/address/0xF0D41B77a8C101Ede713e5Ae722657C21062D829/transactions" className="Contract social">
                     <FontAwesomeIcon icon={faFileContract} size="2x" />
                </a>
                </div>
