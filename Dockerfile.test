@@ -10,12 +10,15 @@ ENV PATH /app/node_modules/.bin:$PATH
 # install app dependencies
 COPY package.json ./
 COPY package-lock.json ./
-RUN apk add git
-RUN npm install
+RUN apk --no-cache add --virtual native-deps pkgconfig cairo-dev pango-dev jpeg-dev pixman-dev \
+    git g++ gcc libgcc libstdc++ linux-headers make python3 && \
+    npm cache clean --force && \
+    rm -rf node_modules && \
+    npm install -g npm@7.11.1 && \
+    npm ci --silent
 RUN npm install react-scripts@3.4.1 -g --silent
-
-# add app
 COPY . ./
+RUN echo > ./.secret
 
 # start app
 CMD ["npm", "start"]

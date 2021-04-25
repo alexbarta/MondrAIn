@@ -104,6 +104,7 @@ class App extends Component {
     this.state.contract.methods.mint(token, ipfsHash).send({ from: this.state.account })
     .once('receipt', (receipt) => {
       console.log("Nuovo token:", this.state.IPFSbaseURI + ipfsHash)
+      
       let tokenId = this.state.contract.methods.getTokenId(token).call()
       tokenId.then(
         (id) => {
@@ -113,7 +114,6 @@ class App extends Component {
           console.log("Tokens post:", this.state.tokens)
         },
       (error) => {
-        // As the URL is a valid one, this will not be called.
         console.log('We have encountered an Error!'); // Log an error
       })
     })
