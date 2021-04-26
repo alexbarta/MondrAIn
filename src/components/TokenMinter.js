@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
+import {Container, Row, Col, Form, Jumbotron, Button, Modal, Spinner, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import { getQRBuffer } from './QRcode';
+import AppErrorModal from './AppErrorModal';
 
 const ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' }) // leaving out the arguments will default to these values
@@ -24,61 +26,208 @@ const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
   return blob;
 }
 
+class TokenCreationModal extends Component {
+  
+    state = {
+      isMinting: this.props.isMinting,
+      IPFSBaseURL: this.props.IPFSBaseURL,
+      openSeaContractURL: this.props.openSeaContractURL
+    }
+  
+
+
+  MintingNftOngoing = (props) => {
+    return(
+      <>
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+          Be patient your NFT is on its way :)
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+        <Spinner animation="border" role="status"> 
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+        </Modal.Body>
+     </>
+    )
+  }
+
+  MintingNftFinished = (props) => {
+
+    return(
+        <>
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title-vcenter">
+              Congratulations your NFT is ready!
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body onClick={() => window.open(this.state.openSeaContractURL + '/' + this.props.tokenId)}>
+            <OverlayTrigger
+              key="bottom"
+              placement="bottom"
+              overlay={
+                <Tooltip id="tooltip-carousel-newtoken">
+                  Check me out on Opensea.io!
+                </Tooltip>
+              }
+            >
+              <img
+                src={this.state.IPFSBaseURL + this.props.tokenMetadata.image}
+                alt="loading"
+                style={{ cursor: "pointer" }}
+              />
+            </OverlayTrigger>
+          </Modal.Body>
+        </>
+    )
+  }
+  
+  render(){
+     return(
+      <Modal show={this.props.showModal} onHide={this.props.hideModal}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered>
+      {this.props.isMinting ? 
+      <this.MintingNftOngoing /> : <this.MintingNftFinished/> }
+      <Modal.Footer>
+        <Button onClick={this.props.hideModal}>Close</Button>
+      </Modal.Footer>
+    </Modal>
+     )
+   }
+}
+
 
 class TokenMinter extends Component {
+
+    
+  state = {
+        showWalletIsNotConnected: false,
+        showTokenIsTooLongOrEmpty: false,
+        showTokenMinting: false, 
+        isMinting: false,
+        tokenMetadata: {},
+        tokenId: null,
+        errors: null,
+      }
+
+  selectModalWalletIsNotConnected = () => {
+    this.setState({showWalletIsNotConnected: !this.state.showWalletIsNotConnected}) // true/false toggle
+  }
+
+  selectModalTokenIsTooLongOrEmpty = () => {
+    this.setState({showTokenIsTooLongOrEmpty: !this.state.showTokenIsTooLongOrEmpty}) // true/false toggle
+  }
+
+  mint = (metadataHashTable, metadataIpfsHash) => {
+    this.props.contract.methods.mint(metadataHashTable.name, metadataIpfsHash).send({ from: this.props.account })
+    .once('receipt', (receipt) => {
+      let tokenId = this.props.contract.methods.getTokenId(metadataHashTable.name).call()
+      tokenId.then((id) => {
+          //This should update token minting modal
+          this.setState( {tokenId: id, tokenMetadata: metadataHashTable }, 
+            () => {this.setState({ isMinting: false })
+          })
+          console.log("salvato nuovo token")
+        },
+      (error) => {
+        console.log('We have encountered an Error!'); // Log an error
+        this.setState({ error: error })
+      })
+    })
+  }
+
+  onFormSubmit = async (e) => {
+    e.preventDefault()
+    if(this.props.isWalletConnected) {
+    const formData = new FormData(e.target),
+    formDataObj = Object.fromEntries(formData.entries())
+    console.log("token input is:", formDataObj.tokenInput.trim().length)
+    const token = formDataObj.tokenInput.trim()
+    
+    if (token.length > 4295 || token.length === 0){
+      this.setState({showTokenIsTooLongOrEmpty: true})
+      return null
+    }
+    // Let Modal Appear
+    this.setState({ showTokenMinting: true, isMinting: true })
+    
+    // Generate QRCode
+    console.log("Generating QR code",token)
+    const qr =  await getQRBuffer(token)
+    console.log("Generated QR code")
+    var QRblob = b64toBlob(qr.split(",")[1], "image/png")
+    console.log("Saving QR on ipfs")
+    
+    ipfs.add(QRblob, (error, QRBlobSaveResult) => {
+      // saving QR BLOB on IPFS, returns hash value pointer
+      console.log('Ipfs image result', QRBlobSaveResult[0].hash)
+      if(error) {
+        console.error(error)
+        this.setState({ error: error })
+        return null
+      }
+      
+      // defining metadata JSON to be saved on blockchain, returns hash value pointer
+      var metadataHashTable = {}
+      metadataHashTable.name = token
+      metadataHashTable.description = "QR code representing: " + token
+      metadataHashTable.image = QRBlobSaveResult[0].hash
+      metadataHashTable.attributes = []
+      console.log("Generated hash table:" + JSON.stringify(metadataHashTable))
+
+      // saving metadata JSON on IPFS, return hash value pointer and mints a new token
+      ipfs.add(JSON.stringify(metadataHashTable), (error, metadataSaveResult) => {
+        console.log('Ipfs metadata result', this.props.IPFSBaseURL + metadataSaveResult[0].hash)
+        if(error) {
+          console.error(error)
+          this.setState({ error: error })
+          return null 
+        }
+        this.mint(metadataHashTable, metadataSaveResult[0].hash)
+      })
+    })
+  } else {
+      this.setState({ showWalletIsNotConnected: true })
+    }
+  }
+
+  componentWillUnmount() {
+    // fix Warning: Can't perform a React state update on an unmounted component
+    this.setState = (state,callback)=>{
+        return;
+    };
+  }
+
   render() {
-      return(
-        <main role="main" className="col-lg-12 d-flex text-center">
-        <div className="content-mr-auto ml-auto">
-          <h1>Abstract your words</h1>
-          <form onSubmit={async (event) => {
-            event.preventDefault()
-            if (this.props.isWalletConnected) {
-              const token = this.token.value
-              console.log("Generating QR code")
-              const qr =  await getQRBuffer(token)
-              console.log("Generated QR code")
-              var QRblob = b64toBlob(qr.split(",")[1], "image/png");
-              console.log("Saving QR on ipfs")
-              ipfs.add(QRblob, (error, result) => {
-                console.log('Ipfs image result', result[0].hash)
-                if(error) {
-                  console.error(error)
-                  return
-                }
-                var metadataHashTable = {}
-                metadataHashTable.name = this.token.value
-                metadataHashTable.description = "QR code representing: " + this.token.value
-                metadataHashTable.image = result[0].hash
-                metadataHashTable.attributes = []
-                console.log("Generated hash table:" + JSON.stringify(metadataHashTable))
-                ipfs.add(JSON.stringify(metadataHashTable), (error,result) => {
-                  console.log('Ipfs metadata result', "https://ipfs.infura.io/ipfs/" + result[0].hash)
-                  if(error) {
-                    console.error(error)
-                    return
-                  }
-                  this.props.mint(token, result[0].hash)
-                })
-              })
-            } else {
-              window.alert("Connect your wallet first")
-            }
-          }}>
-            <input
-              type='text'
-              className='form-control mb-1'
-              placeholder='Your Amazing Words..'
-              ref={(input) => { this.token = input }}
-            />
-            <input
-              type='submit'
-              className='btn btn-block btn-primary'
-              value='Mint It!'
-            />
-          </form>
-        </div>
-      </main>
+    return(
+      <Jumbotron>
+        <AppErrorModal showModal={this.state.showWalletIsNotConnected} hideModal={this.selectModalWalletIsNotConnected} 
+        text="Please connect your wallet first"/>
+        <AppErrorModal showModal={this.state.showTokenIsTooLongOrEmpty} hideModal={this.selectModalTokenIsTooLongOrEmpty} 
+        text="Empty input or too many words (max 4295 chars)"/>
+        <TokenCreationModal 
+        showModal={this.state.showTokenMinting} 
+        hideModal={(() => {return null})} 
+        isMinting={this.state.isMinting} 
+        tokenMetadata={this.state.tokenMetadata}
+        tokenId={this.state.tokenId}
+        IPFSBaseURL={this.props.IPFSBaseURL}
+        openSeaContractURL={this.props.openSeaContractURL}/>
+        <Container>
+          <Row>
+            <Col className="col text-center">
+            <h2>Abstract your words</h2> 
+            </Col>
+          </Row>
+          <Form onSubmit={this.onFormSubmit}>
+              <Form.Control type="text" name="tokenInput" placeholder='Your Amazing Words..'/>
+              <Button className="btn btn-primary w-100" type="submit">Mint it!</Button>
+          </Form>
+        </Container>
+      </Jumbotron>
       )
 
   }
@@ -86,3 +235,5 @@ class TokenMinter extends Component {
 }
 
 export default TokenMinter
+
+

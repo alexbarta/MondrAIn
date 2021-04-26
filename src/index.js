@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-//import 'bootstrap/dist/css/bootstrap.css'
-import './css/imports.css'; // Import PostCSS files
+import 'bootstrap/dist/css/bootstrap.min.css';
+//import './css/imports.css'; // Import PostCSS files
 import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import Modal from './Modal';
-import Navbar from './Navbar';
+import {Spinner} from 'react-bootstrap';
+import AppErrorModal from './AppErrorModal';
+import TopNavbar from './TopNavbar';
 import TokenMinter from './TokenMinter';
 import Social from './Social';
 import NFTCarousel from './NFTCarousel';
@@ -14,28 +15,38 @@ function waitForAccount() {
   }
 }
 
+
 class App extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
       isWalletPresent: true,
+      showWalletIsNotPresent: false,
       isWalletConnected: false,
       isWrongNetwork: false,
+      showIsWrongNetwork: false,
       account: '',
       contract: null,
       contractAddress: '',
       totalSupply: 0,
       tokens: [],
-      IPFSbaseURI: 'https://ipfs.infura.io/ipfs/',
-      openSeaBaseURI: 'https://testnets.opensea.io/assets/mumbai'
+      IPFSBaseURL: 'https://ipfs.infura.io/ipfs/',
+      openSeaBaseURL: 'https://testnets.opensea.io/assets/mumbai'
     }
+  }
+
+  selectModalWalletIsNotPresent = (info) => {
+    this.setState({showWalletIsNotPresent: !this.state.showWalletIsNotPresent}) // true/false toggle
+  }
+  
+  selectModalIsWrongNetwork = (info) => {
+    this.setState({showIsWrongNetwork: !this.state.showIsWrongNetwork}) // true/false toggle
   }
 
   checkWalletPresence = () => {
     if (!window.ethereum) {
-      this.setState({ isWalletPresent : false })
-      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+      this.setState({ isWalletPresent : false, showWalletIsNotPresent: true})
     }
   }
 
@@ -43,17 +54,14 @@ class App extends Component {
     const networkData = await getNetworkData(Mondrain)
     console.log(networkData)
     if(!networkData) {
-        this.setState({ isWrongNetwork : true })
-        window.alert('Smart contract not deployed selected Metamask network. Rinkeby only for now :(')
+        this.setState({ isWrongNetwork : true , showIsWrongNetwork: true})
         return false
     }
     const abi = getAbi(Mondrain)
     const contractAddress = getContractAddress(networkData)
     const contract = getContract(abi, contractAddress)
     const totalSupply = await getTotalSupply(contract)
-    this.setState({ contractAddress })
-    this.setState({ contract })
-    this.setState({ totalSupply })
+    this.setState({ contractAddress: contractAddress, contract: contract, totalSupply: totalSupply })
     console.log("contract:" + contractAddress)
     console.log("totalSupply:" + totalSupply)
     return true
@@ -61,15 +69,15 @@ class App extends Component {
 
   loadIPFSImageData = async () => {
     var tokens = []
-    var numberOfSlides = 4
-    for (var i = this.state.totalSupply - Math.min(numberOfSlides, this.state.totalSupply) + 1 ; i <= this.state.totalSupply; i++) { //show last numberOfSlides 
+    var numberOfCarouselSlides = 4
+    for (var i = this.state.totalSupply - Math.min(numberOfCarouselSlides, this.state.totalSupply) + 1 ; i <= this.state.totalSupply; i++) { //show last numberOfSlides 
       const token = await this.state.contract.methods.tokens(i - 1).call()
       const tokenId = await this.state.contract.methods.getTokenId(token).call()
       const metadataURL = await this.state.contract.methods.tokenURI(tokenId).call()
       const tokenURIFetchResponse = await fetch(metadataURL)
       const tokenURIMetadataJson = await tokenURIFetchResponse.json()
       const tokenURI = tokenURIMetadataJson.image
-      tokens.push({value: token, URI: this.state.IPFSbaseURI + tokenURI, openseaURI: this.state.openSeaBaseURI + '/' + this.state.contractAddress + '/' + tokenId})
+      tokens.push({value: token, URI: this.state.IPFSBaseURL + tokenURI, openseaURL: this.state.openSeaBaseURL + '/' + this.state.contractAddress + '/' + tokenId})
       console.log("token:", token, tokenId, metadataURL , tokenURI)
     }
 
@@ -78,14 +86,9 @@ class App extends Component {
 
   async componentDidMount() {
     console.log("pre isWalletPresent:",  this.state.isWalletPresent)
-    try {
     this.checkWalletPresence()
-    }
-    catch(e) {
-      alert(e);
-   }
     console.log("post isWalletPresent:", this.state.isWalletPresent)
-    if (this.state.isWalletPresent) await this.loadBlockchainData()
+    if (window.ethereum) await this.loadBlockchainData()
     console.log("contract:", this.state.contract)
     if (this.state.contract && this.state.totalSupply > 0) await this.loadIPFSImageData()
   }
@@ -100,41 +103,30 @@ class App extends Component {
     console.log("isWalletConnected post:", this.state.isWalletConnected)
   }
 
-  mint = (token, ipfsHash) => {
-    this.state.contract.methods.mint(token, ipfsHash).send({ from: this.state.account })
-    .once('receipt', (receipt) => {
-      console.log("Nuovo token:", this.state.IPFSbaseURI + ipfsHash)
-      
-      let tokenId = this.state.contract.methods.getTokenId(token).call()
-      tokenId.then(
-        (id) => {
-          this.setState({
-            tokens: [{value: token, URI: this.state.IPFSbaseURI + ipfsHash, openseaURI: this.state.openSeaBaseURI + '/' + this.state.contractAddress + '/' + id}, ...this.state.tokens]
-          })
-          console.log("Tokens post:", this.state.tokens)
-        },
-      (error) => {
-        console.log('We have encountered an Error!'); // Log an error
-      })
+  saveNewTokenCallback = (token, ipfsHash, id) => {
+    this.setState({
+      tokens: [{value: token, URI: this.state.IPFSBaseURL + ipfsHash, openseaURL: this.state.openSeaBaseURL + '/' + this.state.contractAddress + '/' + id}, ...this.state.tokens]
     })
   }
-
 
   render() {
 
 
     return (
-      <div> 
-        <Navbar handler={this.getAccount} address={this.state.account}/>
-        <div className="container-fluid mt-5">
-          <div className="row">
-            <TokenMinter isWalletConnected={this.state.isWalletConnected} mint={this.mint} />
-            <h1>Last Minted Tokens</h1>
-            <NFTCarousel tokens={this.state.tokens}/>
-          </div>
-        </div>
+      <> 
+        <AppErrorModal showModal={this.state.showWalletIsNotPresent} hideModal={this.selectModalWalletIsNotPresent} 
+          text="Non-Ethereum browser detected. You should consider trying MetaMask!"/>
+        <AppErrorModal showModal={this.state.showIsWrongNetwork} hideModal={this.selectModalIsWrongNetwork} 
+          text="Smart contract not deployed on selected Metamask network"/>
+        <TopNavbar handler={this.getAccount} address={this.state.account}/>
+        <TokenMinter isWalletConnected={this.state.isWalletConnected} 
+          contract={this.state.contract}
+          account={this.state.account} 
+          openSeaContractURL={this.state.openSeaBaseURL + '/' + this.state.contractAddress} 
+          IPFSBaseURL={this.state.IPFSBaseURL} />
+        { this.state.tokens === 4 ? <Spinner /> : <NFTCarousel tokens={this.state.tokens}/> }
         <Social />
-      </div>
+      </>
     );
   }
 }

@@ -8,29 +8,41 @@ import {
     faGithub
   } from "@fortawesome/free-brands-svg-icons";
 
+import {Container, Row, Col} from 'react-bootstrap';
+
 class Social extends Component {
     render() {
         return (
-            <div className="social">
-               <div className="social container">
+            <Container style={{padding: "15px 25px"}} >
+               <Row xs="5" md="5" style={{position: "fixed", bottom: "5px", transform: "translate(-50%, -50%)", left: "50%"}}>
+               <Col >
                <a href="https://twitter.com/Mondrainxyz" className="twitter social">
-                    <FontAwesomeIcon icon={faTwitter} size="3x" />
+                    <FontAwesomeIcon icon={faTwitter} size="2x" />
                </a>
+               </Col>
+               <Col>
                <a href="" className="Telegram social">
-                    <FontAwesomeIcon icon={faTelegram} size="3x" />
+                    <FontAwesomeIcon icon={faTelegram} size="2x" />
                </a>
+               </Col>
+               <Col>
                <a href="https://discord.gg/wqDbKXVXK2" className="Discord social">
-                    <FontAwesomeIcon icon={faDiscord} size="3x" />
-               </a>               
+                    <FontAwesomeIcon icon={faDiscord} size="2x" />
+               </a>
+               </Col>
+               <Col>              
                <a href="https://github.com/alexbarta/MondrAIn" className="Github social">
-                    <FontAwesomeIcon icon={faGithub} size="3x" />
+                    <FontAwesomeIcon icon={faGithub} size="2x" />
                </a>
+               </Col>
+               <Col>
                <a href="https://explorer-mumbai.maticvigil.com/address/0x33851697903dd64fF55f20f87967C678d3ED1E7E/transactions" className="Contract social">
-                    <FontAwesomeIcon icon={faFileContract} size="3x" />
+                    <FontAwesomeIcon icon={faFileContract} size="2x" />
                </a>
-               </div>
-            </div>
-            )
+               </Col>
+               </Row>
+           </Container>
+          )
         }
     }
     
