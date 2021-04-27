@@ -1,37 +1,39 @@
-import React, { Component } from 'react';
-import { Carousel, Tooltip, OverlayTrigger, Container, Row, Col } from 'react-bootstrap';
+import React, { Component } from 'react'
+import { Carousel, Tooltip, OverlayTrigger, Container, Row, Col } from 'react-bootstrap'
 
 class NFTCarousel extends Component {
-    render() {
-        return (
-        <Container>
-          <Row>
-          <Col  className="col text-center">
+  render () {
+    return (
+      <Container>
+        <Row>
+          <Col className='col text-center'>
             <h2>Last Minted Tokens</h2>
           </Col>
-          </Row>
-          <Row>
-            <Col className="col text-center">
-        <Carousel>
-        {this.props.tokens.map((token, key) => {
-            return(       
-              <Carousel.Item key={key} onClick={() => window.open(token.openseaURL)}>
-                <OverlayTrigger key="bottom" placement="bottom" overlay={
-                  <Tooltip id={`tooltip-carousel-${key}`}>
-                    Check me out on Opensea.io!
-                  </Tooltip>
+        </Row>
+        <Row>
+          <Col className='col text-center'>
+            <Carousel>
+              {this.props.tokens.map((token, key) => {
+                return (
+                  <Carousel.Item key={key} onClick={() => window.open(token.openseaURL)}>
+                    <OverlayTrigger
+                      key='bottom' placement='bottom' overlay={
+                            <Tooltip id={`tooltip-carousel-${key}`}>
+                            Check me out on Opensea.io!
+                          </Tooltip>
                 }
-                >               
-                <img src={token.URI} alt="loading" style={{cursor: 'pointer'}}/>
-                </OverlayTrigger>
-              </Carousel.Item>
-            )})}
-        </Carousel>
-        </Col>
+                    >
+                      <img src={token.URI} alt='loading' style={{ cursor: 'pointer' }} />
+                    </OverlayTrigger>
+                  </Carousel.Item>
+                )
+              })}
+            </Carousel>
+          </Col>
         </Row>
       </Container>
-    )     
+    )
   }
 }
 
-export default NFTCarousel;
+export default NFTCarousel

@@ -1,10 +1,9 @@
-import React,{Component} from "react";
-import { Modal } from "react-bootstrap";
+import React, { Component } from 'react'
+import { Modal } from 'react-bootstrap'
 
-
-class  AppErrorModal extends Component {
-    render() {
-      return (
+class AppErrorModal extends Component {
+  render () {
+    return (
       <>
         <Modal show={this.props.showModal} onHide={this.props.hideModal}>
           <Modal.Header closeButton>
@@ -13,8 +12,8 @@ class  AppErrorModal extends Component {
           <Modal.Body>{this.props.text}</Modal.Body>
         </Modal>
       </>
-    );
+    )
   }
 }
 
-export default AppErrorModal;
+export default AppErrorModal
