@@ -124,7 +124,9 @@ class App extends Component {
           account={this.state.account} 
           openSeaContractURL={this.state.openSeaBaseURL + '/' + this.state.contractAddress} 
           IPFSBaseURL={this.state.IPFSBaseURL} />
-        { this.state.tokens === 4 ? <Spinner /> : <NFTCarousel tokens={this.state.tokens}/> }
+         {this.state.tokens < 4 ? <div class="d-flex justify-content-center">
+           <Spinner animation="border" role="status"/>
+           </div> : <NFTCarousel tokens={this.state.tokens}/>}
         <Social />
       </>
     );

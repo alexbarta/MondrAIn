@@ -28,26 +28,35 @@ const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
 
 class TokenCreationModal extends Component {
   
-    state = {
-      isMinting: this.props.isMinting,
-      IPFSBaseURL: this.props.IPFSBaseURL,
-      openSeaContractURL: this.props.openSeaContractURL
-    }
+  state = {
+    showModal: this.props.showModal,
+    isMinting: this.props.isMinting,
+    IPFSBaseURL: this.props.IPFSBaseURL,
+    openSeaContractURL: this.props.openSeaContractURL
+  }
   
+  
+  closeModal = () => {
+    this.setState({ showModal: !this.state.showModal}) // true/false toggle
+  }
 
 
   MintingNftOngoing = (props) => {
     return(
       <>
         <Modal.Header closeButton>
+        <div className="col text-center">
           <Modal.Title id="contained-modal-title-vcenter">
           Be patient your NFT is on its way :)
           </Modal.Title>
+        </div>
         </Modal.Header>
         <Modal.Body>
-        <Spinner animation="border" role="status"> 
-          <span className="sr-only">Loading...</span>
-        </Spinner>
+        <div className="d-flex justify-content-center">
+          <Spinner animation="border" role="status"> 
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        </div>
         </Modal.Body>
      </>
     )
@@ -58,10 +67,13 @@ class TokenCreationModal extends Component {
     return(
         <>
           <Modal.Header closeButton>
+          <div class="col text-center">
             <Modal.Title id="contained-modal-title-vcenter">
               Congratulations your NFT is ready!
             </Modal.Title>
+          </div>
           </Modal.Header>
+          <div class="col text-center">
           <Modal.Body onClick={() => window.open(this.state.openSeaContractURL + '/' + this.props.tokenId)}>
             <OverlayTrigger
               key="bottom"
@@ -79,20 +91,24 @@ class TokenCreationModal extends Component {
               />
             </OverlayTrigger>
           </Modal.Body>
+          </div>
         </>
     )
   }
   
   render(){
+    console.log(this.state.showModal)
      return(
-      <Modal show={this.props.showModal} onHide={this.props.hideModal}
+      <Modal show={this.state.showModal}
+      //onHide={this.closeModal}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
+      backdrop="static"
       centered>
       {this.props.isMinting ? 
       <this.MintingNftOngoing /> : <this.MintingNftFinished/> }
       <Modal.Footer>
-        <Button onClick={this.props.hideModal}>Close</Button>
+        <Button onClick={this.closeModal}>Close</Button>
       </Modal.Footer>
     </Modal>
      )
@@ -130,7 +146,7 @@ class TokenMinter extends Component {
           this.setState( {tokenId: id, tokenMetadata: metadataHashTable }, 
             () => {this.setState({ isMinting: false })
           })
-          console.log("salvato nuovo token")
+          console.log("Saved new token")
         },
       (error) => {
         console.log('We have encountered an Error!'); // Log an error
@@ -210,7 +226,6 @@ class TokenMinter extends Component {
         text="Empty input or too many words (max 4295 chars)"/>
         <TokenCreationModal 
         showModal={this.state.showTokenMinting} 
-        hideModal={(() => {return null})} 
         isMinting={this.state.isMinting} 
         tokenMetadata={this.state.tokenMetadata}
         tokenId={this.state.tokenId}
