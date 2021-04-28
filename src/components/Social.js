@@ -36,7 +36,7 @@ class Social extends Component {
             </a>
           </Col>
           <Col>
-            <a href={'https://explorer-mumbai.maticvigil.com/address/' + this.props.contractAddress + '/transactions'} className='Contract social'>
+            <a href={this.props.contractAddress ? 'https://explorer-mumbai.maticvigil.com/address/' + this.props.contractAddress + '/transactions' : 'https://explorer-mumbai.maticvigil.com'} className='Contract social'>
               <FontAwesomeIcon icon={faFileContract} size='2x' />
             </a>
           </Col>

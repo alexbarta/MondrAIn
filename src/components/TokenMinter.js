@@ -165,9 +165,9 @@ class TokenMinter extends Component {
     }).on('error', (error) => {console.log("I am in error:", error)
         this.setState({ onError: error, isMinting: false }) 
     })
-    .on('transactionHash', (transactionHash) => {console.log("transaction hash", transactionHash)} )
+/*     .on('transactionHash', (transactionHash) => {console.log("transaction hash", transactionHash)} )
     .on('confirmation', (confirmation) => {console.log("confirmation ", confirmation)})
-    .catch(console.log('in catch'));
+    .catch(console.log('in catch')); */
   }
 
   onFormSubmit = async (e) => {

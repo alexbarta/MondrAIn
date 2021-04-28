@@ -10,6 +10,8 @@ ENV PATH /app/node_modules/.bin:$PATH
 # install app dependencies
 COPY package.json ./
 COPY package-lock.json ./
+# fix broken canvas package checksum
+RUN sed -i 's|sha512-GsjTiYrUZjaMxiIDnPGMN7NPLn2wpxWK0K2x8teAf8KM1gvLMSPkUnW8yuDtqIWZHjyoxin24VPNq80DBxYdcw==|sha512-gBkgj7ryUuryjfvPbI5OyvTLiHAazfQWT0wa5l/2TjfzfsSCOi1QmAfJTLIftZE5eFu+NG30DNC/k8zmTxVrzA==|g' ./package-lock.json
 RUN apk --no-cache add --virtual native-deps pkgconfig cairo-dev pango-dev jpeg-dev pixman-dev \
     git g++ gcc libgcc libstdc++ linux-headers make python3 && \
     npm cache clean --force && \
