@@ -23,7 +23,7 @@ class TopNavbar extends Component {
                         <Nav.Link onClick={this.selectModal}><About showModal={this.state.showAboutModal} hideModal={this.selectModal}/>About</Nav.Link>
                     </Nav>
                     <Navbar.Collapse className="justify-content-end">
-                        <Nav.Link bsPrefix="nav-link text-truncate" style={{ 'max-width' : '200px', flex: 1}} onClick={this.props.handler}>{ (this.props.address) ? this.props.address : 'Connect Wallet' }</Nav.Link>
+                        <Nav.Link bsPrefix="nav-link text-truncate" style={{ maxWidth: "200px" }} onClick={this.props.handler}>{ (this.props.address) ? this.props.address : 'Connect Wallet' }</Nav.Link>
                     </Navbar.Collapse>
                 </Navbar>
         )

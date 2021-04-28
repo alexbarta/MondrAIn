@@ -28,6 +28,23 @@ const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
 
 class TokenCreationModal extends Component {
   
+  MintingNftOnError = (props) => {
+    console.log("Catched error:", this.props.onError)
+    return(
+      <>
+        <Modal.Header closeButton>
+        <div className="col text-center">
+          <Modal.Title id="contained-modal-title-vcenter">
+          Oops....
+          </Modal.Title>
+        </div>
+        </Modal.Header>
+        <Modal.Body>
+        Something unexpected happened :( Please try once again.
+        </Modal.Body>
+     </>
+    )
+  }
   
   MintingNftOngoing = (props) => {
     return(
@@ -93,8 +110,8 @@ class TokenCreationModal extends Component {
       aria-labelledby="contained-modal-title-vcenter"
       backdrop="static"
       centered>
-      {this.props.isMinting ? 
-      <this.MintingNftOngoing /> : <this.MintingNftFinished/> }
+      {this.props.isMinting ? <this.MintingNftOngoing /> : 
+      this.props.onError ? <this.MintingNftOnError/> : <this.MintingNftFinished/>}
       <Modal.Footer>
         <Button onClick={this.props.hideModal}>Close</Button>
       </Modal.Footer>
@@ -114,7 +131,7 @@ class TokenMinter extends Component {
         isMinting: false,
         tokenMetadata: {},
         tokenId: null,
-        errors: null,
+        onError: null,
       }
 
   selectModalWalletIsNotConnected = () => {
@@ -132,6 +149,7 @@ class TokenMinter extends Component {
   mint = (metadataHashTable, metadataIpfsHash) => {
     this.props.contract.methods.mint(metadataHashTable.name, metadataIpfsHash).send({ from: this.props.account })
     .once('receipt', (receipt) => {
+      console.log('receipt:', receipt)
       let tokenId = this.props.contract.methods.getTokenId(metadataHashTable.name).call()
       tokenId.then((id) => {
           //This should update token minting modal
@@ -142,9 +160,14 @@ class TokenMinter extends Component {
         },
       (error) => {
         console.log('We have encountered an Error!'); // Log an error
-        this.setState({ error: error })
+        this.setState({ onError: error })
       })
+    }).on('error', (error) => {console.log("I am in error:", error)
+        this.setState({ onError: error, isMinting: false }) 
     })
+    .on('transactionHash', (transactionHash) => {console.log("transaction hash", transactionHash)} )
+    .on('confirmation', (confirmation) => {console.log("confirmation ", confirmation)})
+    .catch(console.log('in catch'));
   }
 
   onFormSubmit = async (e) => {
@@ -170,12 +193,12 @@ class TokenMinter extends Component {
     
     ipfs.add(QRblob, (error, QRBlobSaveResult) => {
       // saving QR BLOB on IPFS, returns hash value pointer
-      console.log('Ipfs image result', QRBlobSaveResult[0].hash)
       if(error) {
-        console.error(error)
-        this.setState({ error: error })
+        console.log("ipfs add:", error)
+        this.setState({ onError: error , isMinting: false })
         return null
       }
+      console.log('Ipfs image result', QRBlobSaveResult[0].hash)
       
       // defining metadata JSON to be saved on blockchain, returns hash value pointer
       var metadataHashTable = {}
@@ -187,12 +210,12 @@ class TokenMinter extends Component {
 
       // saving metadata JSON on IPFS, return hash value pointer and mints a new token
       ipfs.add(JSON.stringify(metadataHashTable), (error, metadataSaveResult) => {
-        console.log('Ipfs metadata result', this.props.IPFSBaseURL + metadataSaveResult[0].hash)
         if(error) {
           console.error(error)
-          this.setState({ error: error })
+          this.setState({ onError: error, isMinting: false })
           return null 
         }
+        console.log('Ipfs metadata result', this.props.IPFSBaseURL + metadataSaveResult[0].hash)
         this.mint(metadataHashTable, metadataSaveResult[0].hash)
       })
     })
@@ -219,7 +242,8 @@ class TokenMinter extends Component {
         <TokenCreationModal 
         showModal={this.state.showTokenMinting}
         hideModal={this.selectModalTokenIsMinting}
-        isMinting={this.state.isMinting} 
+        isMinting={this.state.isMinting}
+        onError={this.state.onError}
         tokenMetadata={this.state.tokenMetadata}
         tokenId={this.state.tokenId}
         IPFSBaseURL={this.props.IPFSBaseURL}
