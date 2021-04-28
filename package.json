@@ -21,6 +21,7 @@
     "awesome-qr": "^2.1.4-rc.0",
     "bootstrap": "^4.6.0",
     "chai-as-promised": "^7.1.1",
+    "node-sass": "^5.0.0",
     "react-bootstrap": "^1.5.2",
     "react-native-web": "^0.15.1",
     "react-scripts": "^4.0.3",

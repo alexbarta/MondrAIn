@@ -1,0 +1,49 @@
+// Custom.scss
+// Option A: Include all of Bootstrap
+@charset 'UTF-8';
+@import "fonts/_fonts.scss";
+
+
+html {
+    background-image: url('../img/background.svg');
+}
+
+body {
+    font-family: minecraftiaregular;
+}
+
+.root {
+    background-image: url('../img/background.svg');
+}
+
+.btn-primary {
+    background-color: blue ! important;
+}
+
+.jumbotron {
+    background-color: yellow  ! important;
+}
+
+.navbar {
+    background-color: blue ! important;
+}
+
+.navbar-brand {
+    color: white ! important;
+}
+
+.nav-link {
+    color: white ! important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.modal-content {
+    background-color: #333;
+    color: white;
+}
+
+.social {
+    color: black ! important;
+}

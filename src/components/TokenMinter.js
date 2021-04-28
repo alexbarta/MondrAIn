@@ -28,19 +28,7 @@ const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
 
 class TokenCreationModal extends Component {
   
-  state = {
-    showModal: this.props.showModal,
-    isMinting: this.props.isMinting,
-    IPFSBaseURL: this.props.IPFSBaseURL,
-    openSeaContractURL: this.props.openSeaContractURL
-  }
   
-  
-  closeModal = () => {
-    this.setState({ showModal: !this.state.showModal}) // true/false toggle
-  }
-
-
   MintingNftOngoing = (props) => {
     return(
       <>
@@ -67,14 +55,14 @@ class TokenCreationModal extends Component {
     return(
         <>
           <Modal.Header closeButton>
-          <div class="col text-center">
+          <div className="col text-center">
             <Modal.Title id="contained-modal-title-vcenter">
               Congratulations your NFT is ready!
             </Modal.Title>
           </div>
           </Modal.Header>
-          <div class="col text-center">
-          <Modal.Body onClick={() => window.open(this.state.openSeaContractURL + '/' + this.props.tokenId)}>
+          <div className="col text-center">
+          <Modal.Body onClick={() => window.open(this.props.openSeaContractURL + '/' + this.props.tokenId)}>
             <OverlayTrigger
               key="bottom"
               placement="bottom"
@@ -85,7 +73,7 @@ class TokenCreationModal extends Component {
               }
             >
               <img
-                src={this.state.IPFSBaseURL + this.props.tokenMetadata.image}
+                src={this.props.IPFSBaseURL + this.props.tokenMetadata.image}
                 alt="loading"
                 style={{ cursor: "pointer" }}
               />
@@ -97,10 +85,10 @@ class TokenCreationModal extends Component {
   }
   
   render(){
-    console.log(this.state.showModal)
-     return(
-      <Modal show={this.state.showModal}
-      //onHide={this.closeModal}
+
+    return(
+      <Modal show={this.props.showModal}
+      onHide={this.props.hideModal}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       backdrop="static"
@@ -108,7 +96,7 @@ class TokenCreationModal extends Component {
       {this.props.isMinting ? 
       <this.MintingNftOngoing /> : <this.MintingNftFinished/> }
       <Modal.Footer>
-        <Button onClick={this.closeModal}>Close</Button>
+        <Button onClick={this.props.hideModal}>Close</Button>
       </Modal.Footer>
     </Modal>
      )
@@ -137,6 +125,10 @@ class TokenMinter extends Component {
     this.setState({showTokenIsTooLongOrEmpty: !this.state.showTokenIsTooLongOrEmpty}) // true/false toggle
   }
 
+  selectModalTokenIsMinting = () => {
+    this.setState({ showTokenMinting: !this.state.showTokenMinting}) // true/false toggle
+  }
+
   mint = (metadataHashTable, metadataIpfsHash) => {
     this.props.contract.methods.mint(metadataHashTable.name, metadataIpfsHash).send({ from: this.props.account })
     .once('receipt', (receipt) => {
@@ -160,7 +152,6 @@ class TokenMinter extends Component {
     if(this.props.isWalletConnected) {
     const formData = new FormData(e.target),
     formDataObj = Object.fromEntries(formData.entries())
-    console.log("token input is:", formDataObj.tokenInput.trim().length)
     const token = formDataObj.tokenInput.trim()
     
     if (token.length > 4295 || token.length === 0){
@@ -218,6 +209,7 @@ class TokenMinter extends Component {
   }
 
   render() {
+
     return(
       <Jumbotron>
         <AppErrorModal showModal={this.state.showWalletIsNotConnected} hideModal={this.selectModalWalletIsNotConnected} 
@@ -225,7 +217,8 @@ class TokenMinter extends Component {
         <AppErrorModal showModal={this.state.showTokenIsTooLongOrEmpty} hideModal={this.selectModalTokenIsTooLongOrEmpty} 
         text="Empty input or too many words (max 4295 chars)"/>
         <TokenCreationModal 
-        showModal={this.state.showTokenMinting} 
+        showModal={this.state.showTokenMinting}
+        hideModal={this.selectModalTokenIsMinting}
         isMinting={this.state.isMinting} 
         tokenMetadata={this.state.tokenMetadata}
         tokenId={this.state.tokenId}

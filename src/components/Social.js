@@ -13,7 +13,7 @@ import { Container, Row, Col } from 'react-bootstrap'
 class Social extends Component {
   render () {
     return (
-      <Container style={{ padding: '15px 25px' }}>
+      <Container className='social' style={{ padding: '15px 25px' }}>
         <Row xs='5' md='5' style={{ position: 'fixed', bottom: '5px', transform: 'translate(-50%, -50%)', left: '50%' }}>
           <Col>
             <a href='https://twitter.com/Mondrainxyz' className='twitter social'>
@@ -21,7 +21,7 @@ class Social extends Component {
             </a>
           </Col>
           <Col>
-            <a href='' className='Telegram social'>
+            <a href='https://t.me/mondrAIn' className='Telegram social'>
               <FontAwesomeIcon icon={faTelegram} size='2x' />
             </a>
           </Col>
@@ -36,7 +36,7 @@ class Social extends Component {
             </a>
           </Col>
           <Col>
-            <a href='https://explorer-mumbai.maticvigil.com/address/0x33851697903dd64fF55f20f87967C678d3ED1E7E/transactions' className='Contract social'>
+            <a href={'https://explorer-mumbai.maticvigil.com/address/' + this.props.contractAddress + '/transactions'} className='Contract social'>
               <FontAwesomeIcon icon={faFileContract} size='2x' />
             </a>
           </Col>
