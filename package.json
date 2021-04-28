@@ -18,7 +18,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@openzeppelin/contracts": "^3.4.1",
     "@truffle/hdwallet-provider": "^1.2.4",
-    "awesome-qr": "^2.1.4-rc.0",
+    "awesome-qr": "file:Awesome-qr.js-master",
     "bootstrap": "^4.6.0",
     "chai-as-promised": "^7.1.1",
     "node-sass": "^5.0.0",
