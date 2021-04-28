@@ -19,11 +19,11 @@ class TopNavbar extends Component {
                     <Navbar.Brand href="#home">MondrAIn</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Nav defaultActiveKey="#home" className="mr-auto">
-                        <Nav.Link >Home</Nav.Link>
+                        {/* <Nav.Link >Home</Nav.Link> */}
                         <Nav.Link onClick={this.selectModal}><About showModal={this.state.showAboutModal} hideModal={this.selectModal}/>About</Nav.Link>
                     </Nav>
                     <Navbar.Collapse className="justify-content-end">
-                        <Nav.Link bsPrefix="nav-link text-truncate" style={{ maxWidth: "200px" }} onClick={this.props.handler}>{ (this.props.address) ? this.props.address : 'Connect Wallet' }</Nav.Link>
+                        <Nav.Link bsPrefix="nav-link text-truncate" style={{ maxWidth: "190px" }} onClick={this.props.handler}>{ (this.props.address) ? this.props.address : 'Connect Wallet' }</Nav.Link>
                     </Navbar.Collapse>
                 </Navbar>
         )
