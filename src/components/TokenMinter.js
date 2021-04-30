@@ -172,7 +172,7 @@ class TokenMinter extends Component {
 
   onFormSubmit = async (e) => {
     e.preventDefault()
-    if(this.props.isWalletConnected) {
+    if(this.props.isWalletConnected && this.props.contract) {
     const formData = new FormData(e.target),
     formDataObj = Object.fromEntries(formData.entries())
     const token = formDataObj.tokenInput.trim()
