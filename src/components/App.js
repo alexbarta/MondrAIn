@@ -115,7 +115,7 @@ class App extends Component {
         <AppErrorModal showModal={this.state.showWalletIsNotPresent} hideModal={this.selectModalWalletIsNotPresent} 
           text="Non-Ethereum browser detected. You should consider trying MetaMask!"/>
         <AppErrorModal showModal={this.state.showIsWrongNetwork} hideModal={this.selectModalIsWrongNetwork} 
-          text={["Smart contract not deployed on selected Metamask network. ", <a href='https://docs.matic.network/docs/develop/metamask/testnet/'>Please configure Matic Mumbai testnet on your wallet</a>]}/>
+          text={["Currently, this website only operates with a dedicated blockchain testnet. ", <a href='https://docs.matic.network/docs/develop/metamask/testnet/' target='_blank'> Please configure Matic Mumbai testnet on your wallet</a>]}/>
         <TopNavbar handler={this.getAccount} address={this.state.account}/>
         <TokenMinter isWalletConnected={this.state.isWalletConnected} 
           contract={this.state.contract}
