@@ -1,18 +1,22 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Mondrain is ERC721 {
+
+contract MondrainERC721 is ERC721URIStorage, Ownable  {
   
   string[] public tokens;
   mapping(string => uint) _tokenId;
 
   constructor() public ERC721("quadro", "QUADRO") {
-    _setBaseURI("https://ipfs.infura.io/ipfs/");
+    //_setBaseURI("https://ipfs.infura.io/ipfs/");
   }
   
-  function mint(string memory _token, string memory _tokenURI) public {
+  
+  function mint(string memory _token, string memory _tokenURI) public onlyOwner {
     bytes memory b = bytes(_token);
     require(b.length > 0, "Token cannot be empty.");
     //test string length
