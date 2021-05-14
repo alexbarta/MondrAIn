@@ -1,22 +1,34 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+//import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 
-contract MondrainERC721 is ERC721URIStorage, Ownable  {
+contract MondrainERC721 is ERC721URIStorage, AccessControl {
+    
+  bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+  // bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
   
   string[] public tokens;
   mapping(string => uint) _tokenId;
 
-  constructor() public ERC721("quadro", "QUADRO") {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId);
+  }
+
+  constructor(address mondrainERC721Sale) public ERC721("quadro", "QUADRO") {
     //_setBaseURI("https://ipfs.infura.io/ipfs/");
+    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    grantRole(MINTER_ROLE, msg.sender);
+    grantRole(MINTER_ROLE, mondrainERC721Sale);
   }
   
   
-  function mint(string memory _token, string memory _tokenURI) public onlyOwner {
+  
+  function mint(string memory _token, string memory _tokenURI) public {
+    require(hasRole(MINTER_ROLE, msg.sender), "Caller is not a minter");
     bytes memory b = bytes(_token);
     require(b.length > 0, "Token cannot be empty.");
     //test string length

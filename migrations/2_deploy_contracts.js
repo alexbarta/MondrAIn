@@ -1,5 +1,5 @@
-const Mondrain = artifacts.require("Mondrain");
+const MondrainERC721 = artifacts.require("MondrainERC721");
 
 module.exports = function (deployer) {
-  deployer.deploy(Mondrain);
+  deployer.deploy(MondrainERC721);
 };
