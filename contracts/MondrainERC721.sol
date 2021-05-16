@@ -1,52 +1,56 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-//import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-
-contract MondrainERC721 is ERC721URIStorage, AccessControl {
-    
-  bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-  // bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
-  
+contract MondrainERC721 is ERC721URIStorage {
+      
+  address payable private _owner;
+  uint mintingFee = 0.0001 ether;
   string[] public tokens;
   mapping(string => uint) _tokenId;
 
-  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
-        return super.supportsInterface(interfaceId);
-  }
-
-  constructor(address mondrainERC721Sale) public ERC721("quadro", "QUADRO") {
+  constructor() public ERC721("mondrain.xyz", "QUADRO") {
     //_setBaseURI("https://ipfs.infura.io/ipfs/");
-    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    grantRole(MINTER_ROLE, msg.sender);
-    grantRole(MINTER_ROLE, mondrainERC721Sale);
+    _owner = payable(msg.sender);
   }
   
-  
-  
-  function mint(string memory _token, string memory _tokenURI) public {
-    require(hasRole(MINTER_ROLE, msg.sender), "Caller is not a minter");
+  function mint(string memory _token, string memory _tokenURI) public payable {
+    require(msg.value == mintingFee, "Need to send a minting fee");
     bytes memory b = bytes(_token);
     require(b.length > 0, "Token cannot be empty.");
-    //test string length
     require(testStrLength(_token), "Token length is greater than 4295." );
-    //test for empty chars
     require(testStrNonEmptyFirstLastChar(_token), "Token cannot contain empty space at the beginning or at the end.");
-    //create id 
+
     uint _id = uint(keccak256(b));
-    //mint token
     _safeMint(msg.sender, _id);
-    //set metadata URI
     _setTokenURI(_id, _tokenURI);
-    //save token into array
+    _owner.transfer(msg.value);
     tokens.push(_token);
-    //save token id
     _tokenId[_token] = _id;
   }
-  
+
+  //TO DO set mintingFee
+  // function setMintingFee() public onlyAdmin {
+
+  // }
+
+  //TO DO create randomness
+  function getRandomTokenId() view public returns(uint) {
+    require(tokens.length > 0, "No ERC721 tokens have been minted yet.");
+    string memory _token = tokens[0]; //not very random :D 
+    return _tokenId[_token];
+  }
+
+  function test() view public returns (uint) {
+    return mintingFee;
+  }
+
+  function totalSupply() view public returns(uint) {
+    return tokens.length;
+  }
+
   function getTokenId(string memory _token) public view returns (uint) {
     return _tokenId[_token];
   }

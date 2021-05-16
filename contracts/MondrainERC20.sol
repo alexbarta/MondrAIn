@@ -8,18 +8,18 @@ contract MondrainERC20 is ERC20Capped, AccessControl {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
-    uint256 maxTokens = 1000000000000000000000000000; //1 billion tokens
+    uint256 maxTokens = 10000000000 * (10 ** 18); //10 billion tokens
 
-    constructor(address lotteryGenerator) public ERC20("MAI", "MAI") ERC20Capped(maxTokens) {
+    constructor() public ERC20("mondrain", "MAI") ERC20Capped(maxTokens) {
         // Grant the contract deployer the default admin role: it will be able
         // to grant and revoke any roles
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         grantRole(MINTER_ROLE, msg.sender);
-        grantRole(MINTER_ROLE, lotteryGenerator);
+        //grantRole(MINTER_ROLE, mondrainLottery);
     }
 
     function mint(address to, uint256 amount) public {
-        require(hasRole(MINTER_ROLE, msg.sender), "Caller is not a minter");
+        //require(hasRole(MINTER_ROLE, msg.sender), "Caller is not a minter");
         _mint(to, amount);
     }
 
