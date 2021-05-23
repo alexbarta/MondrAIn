@@ -19,11 +19,17 @@
  */
 
 
-const HDWalletProvider = require('truffle-hdwallet-provider');
+//const HDWalletProvider = require('truffle-hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 const infuraKey = "0486a10f87ce4d788ea193b0c0f70916";
 
 const fs = require('fs');
 const mnemonic = fs.readFileSync(".secret").toString().trim();
+
+//avax vars
+const protocol = "https";
+const ip_testnet = "api.avax-test.network";
+const port_testnet = 443;
 
 module.exports = {
   /**
@@ -89,7 +95,16 @@ module.exports = {
       confirmations: 2,
       timeoutBlocks: 200,
       skipDryRun: true
-    }
+    },
+    avax_fujinet: {
+      provider: function() {
+       return new HDWalletProvider(mnemonic, `${protocol}://${ip_testnet}:${port_testnet}/ext/bc/C/rpc`)
+      },
+      network_id: "*",
+      gas: 8000000,
+      gasPrice: 470000000000,
+      skipDryRun: true
+     }
   },
 
   // Set default mocha options here, use special reporters etc.
