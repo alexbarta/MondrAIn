@@ -13,8 +13,10 @@ contract MondrainERC721 is ERC721URIStorage, AccessControl {
 
   //send minting fee to this address
   address payable private _owner;
+  address payable private _lotteryRunner;
   //what people pay on basis 
-  uint mintingFee = 0.00001 ether;
+  uint mintingFee = 0.01 ether;
+  uint lotteryFee = 0.001 ether;
   //list minted tokens  
   string[] public tokens;
   //token map
@@ -22,14 +24,15 @@ contract MondrainERC721 is ERC721URIStorage, AccessControl {
   // counter
   uint private counter;
 
-  constructor() public ERC721("mondrain.xyz", "QUADRO") {
+  constructor(address lotteryRunner) public ERC721("mondrain.xyz", "QUADRO") {
     //_setBaseURI("https://ipfs.infura.io/ipfs/");
     _owner = payable(msg.sender);
+    _lotteryRunner = payable(lotteryRunner);
     _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
   }
   
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
-        return super.supportsInterface(interfaceId);
+    return super.supportsInterface(interfaceId);
   }
   
   function mint(string memory _token, string memory _tokenURI) public payable {
@@ -41,9 +44,14 @@ contract MondrainERC721 is ERC721URIStorage, AccessControl {
     uint _id = uint(keccak256(b));
     _safeMint(msg.sender, _id);
     _setTokenURI(_id, _tokenURI);
-    _owner.transfer(msg.value);
+    _lotteryRunner.transfer(lotteryFee);
+    _owner.transfer(msg.value - lotteryFee);
     tokens.push(_token);
     _tokenId[_token] = _id;
+  }
+
+  function setRandomSeed(uint seed) public onlyAdmin {
+     counter = seed;
   }
 
   //TO DO set mintingFee proportionally to amount of token owned

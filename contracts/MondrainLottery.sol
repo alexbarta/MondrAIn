@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract MondrainLottery is AccessControl, Pausable {
 
-    bytes32 public constant LOTTERY_ADMIN_ROLE = keccak256("BURNER_ROLE");
+    bytes32 public constant LOTTERY_ADMIN_ROLE = keccak256("LOTTERY_ADMIN_ROLE");
 
     modifier onlyAdmin {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Not admin");
@@ -24,9 +24,6 @@ contract MondrainLottery is AccessControl, Pausable {
     MondrainERC721 private erc721;
     MondrainERC20 private erc20;
     uint rewardAmount = 1000;
-    address[] winners;
-    mapping(address => uint) wonAmount;
-       
 
     event WinnerRewarded(address winnerAddress, uint tokenAmount, uint256 timestamp);
 
@@ -47,8 +44,6 @@ contract MondrainLottery is AccessControl, Pausable {
         address _winner = drawWinner();
         erc20.mint(address(this), rewardAmount);
         erc20.transfer(_winner, rewardAmount);
-        winners.push(_winner);
-        wonAmount[_winner] += rewardAmount;
         emit WinnerRewarded(_winner, rewardAmount, block.timestamp);
     }
 
@@ -59,11 +54,6 @@ contract MondrainLottery is AccessControl, Pausable {
 
     function getRewardAmount() public view returns(uint){
         return rewardAmount;
-    }
-
-    function getOverallWinnedAmount(address winner) public view returns(uint) {
-        require(winners.length > 0, "No winners awarded yet.");
-        return wonAmount[winner];
     }
 
     function grantLotteryAdminRole(address newLotteryAdmin) public onlyAdmin {

@@ -32,6 +32,7 @@
     "@awesomeqr/react": "^0.1.2-rc.0",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@nomiclabs/buidler": "^1.4.8",
+    "@openzeppelin/contract-loader": "^0.6.2",
     "@truffle/hdwallet-provider": "^1.4.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.1.0",

@@ -16,16 +16,16 @@ contract MondrainERC20 is ERC20Capped, AccessControl {
     }
 
     modifier onlyMinter {
-       require(hasRole(MINTER_ROLE, msg.sender), "Not admin");
+       require(hasRole(MINTER_ROLE, msg.sender), "Not minter");
        _;
     }
 
     modifier onlyBurner {
-       require(hasRole(BURNER_ROLE, msg.sender), "Not admin");
+       require(hasRole(BURNER_ROLE, msg.sender), "Not burner");
        _;
     }
 
-    constructor() public ERC20("mondrain", "MAI") ERC20Capped(maxTokens) {
+    constructor() public ERC20("mondrain", "XMD") ERC20Capped(maxTokens) {
         // Grant the contract deployer the default admin role: it will be able
         // to grant and revoke any roles
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);

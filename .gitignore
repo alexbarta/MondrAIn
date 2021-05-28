@@ -2,3 +2,4 @@ node_modules/
 build/contracts/*
 .DS_Store
 .secret
+secret.json
