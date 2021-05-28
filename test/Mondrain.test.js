@@ -6,7 +6,7 @@ const MondrainERC721 = artifacts.require('./MondrainERC721.sol')
 const MondrainERC20 = artifacts.require('./MondrainERC20.sol')
 const MondrainLottery = artifacts.require('./MondrainLottery.sol')
 
-const mintingFee = 10000000000000000;
+const mintingFee = 50000000000000000;
 const lotteryRunner = '0xB1e6dc2bCc85780E208a168d5E961542c4963a80';
 
 function makeRandomString (length) {

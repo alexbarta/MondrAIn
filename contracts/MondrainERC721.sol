@@ -15,8 +15,8 @@ contract MondrainERC721 is ERC721URIStorage, AccessControl {
   address payable private _owner;
   address payable private _lotteryRunner;
   //what people pay on basis 
-  uint mintingFee = 0.01 ether;
-  uint lotteryFee = 0.001 ether;
+  uint mintingFee = 0.05 ether;
+  uint lotteryFee = 0.04 ether;
   //list minted tokens  
   string[] public tokens;
   //token map
@@ -61,7 +61,16 @@ contract MondrainERC721 is ERC721URIStorage, AccessControl {
   }
 
   function getMintingFee() public view returns(uint) {
-      return mintingFee;
+    return mintingFee;
+  }
+
+  function setLotteryFee(uint amount) public onlyAdmin {
+    require(mintingFee - amount > 0, "lottery fee must be less than the minting fee");
+    lotteryFee = amount;
+  }
+
+  function getLotteryFee() public view returns(uint) {
+     return lotteryFee;
   }
 
   //choose random tokens
