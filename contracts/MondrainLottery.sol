@@ -23,7 +23,7 @@ contract MondrainLottery is AccessControl, Pausable {
     
     MondrainERC721 private erc721;
     MondrainERC20 private erc20;
-    uint rewardAmount = 1000;
+    uint rewardAmount = 1000 * (10 ** 18);
 
     event WinnerRewarded(address winnerAddress, uint tokenAmount, uint256 timestamp);
 

@@ -15,11 +15,11 @@ class NFTCarousel extends Component {
             <Carousel>
               {this.props.tokens.map((token, key) => {
                 return (
-                  <Carousel.Item key={key} onClick={() => window.open(token.openseaURL)}>
+                  <Carousel.Item key={key} onClick={() => window.open(token.explorerURL)}>
                     <OverlayTrigger
                       key='bottom' placement='bottom' overlay={
                             <Tooltip id={`tooltip-carousel-${key}`}>
-                            Check me out on Opensea.io!
+                            Check me out on AVAX explorer!
                           </Tooltip>
                 }
                     >

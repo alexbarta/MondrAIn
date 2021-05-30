@@ -79,13 +79,13 @@ class TokenCreationModal extends Component {
           </div>
           </Modal.Header>
           <div className="col text-center">
-          <Modal.Body onClick={() => window.open(this.props.openSeaContractURL + '/' + this.props.tokenId)}>
+          <Modal.Body onClick={() => window.open(this.props.explorerURL +  this.props.tokenId)}>
             <OverlayTrigger
               key="bottom"
               placement="bottom"
               overlay={
                 <Tooltip id="tooltip-carousel-newtoken">
-                  Check me out on Opensea.io!
+                  Check me out on AVAX explorer!
                 </Tooltip>
               }
             >
@@ -147,10 +147,11 @@ class TokenMinter extends Component {
   }
 
   mint = (metadataHashTable, metadataIpfsHash) => {
-    this.props.contract.methods.mint(metadataHashTable.name, metadataIpfsHash).send({ from: this.props.account })
+    this.props.contractERC721.methods.mint(metadataHashTable.name, metadataIpfsHash).send({ from: this.props.account, 
+      value: 50000000000000000, gas: 300000, gasPrice: 300000000000})
     .once('receipt', (receipt) => {
       console.log('receipt:', receipt)
-      let tokenId = this.props.contract.methods.getTokenId(metadataHashTable.name).call()
+      let tokenId = this.props.contractERC721.methods.getTokenId(metadataHashTable.name).call()
       tokenId.then((id) => {
           //This should update token minting modal
           this.setState( {tokenId: id, tokenMetadata: metadataHashTable }, 
@@ -172,7 +173,7 @@ class TokenMinter extends Component {
 
   onFormSubmit = async (e) => {
     e.preventDefault()
-    if(this.props.isWalletConnected && this.props.contract) {
+    if(this.props.isWalletConnected && this.props.contractERC721) {
     const formData = new FormData(e.target),
     formDataObj = Object.fromEntries(formData.entries())
     const token = formDataObj.tokenInput.trim()
@@ -216,7 +217,7 @@ class TokenMinter extends Component {
           return null 
         }
         console.log('Ipfs metadata result', this.props.IPFSBaseURL + metadataSaveResult[0].hash)
-        this.mint(metadataHashTable, metadataSaveResult[0].hash)
+        this.mint(metadataHashTable, this.props.IPFSBaseURL + metadataSaveResult[0].hash)
       })
     })
   } else {
@@ -247,7 +248,7 @@ class TokenMinter extends Component {
         tokenMetadata={this.state.tokenMetadata}
         tokenId={this.state.tokenId}
         IPFSBaseURL={this.props.IPFSBaseURL}
-        openSeaContractURL={this.props.openSeaContractURL}/>
+        explorerURL={this.props.explorerURL}/>
         <Container>
           <Row>
             <Col className="col text-center">
