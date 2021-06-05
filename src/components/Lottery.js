@@ -14,7 +14,7 @@ class Lottery extends Component {
     }  
 
     return (
-<Jumbotron>
+<>
 <Table striped bordered hover variant="dark">
   <thead>
     <tr>
@@ -27,7 +27,7 @@ class Lottery extends Component {
     {winnerEntries.reverse()}
   </tbody>
 </Table>
-</Jumbotron>
+</>
 
     )
   }

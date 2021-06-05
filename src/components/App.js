@@ -9,7 +9,7 @@ import Lottery from './Lottery';
 import {getEthAccounts, getNetworkData, getAbi, getContractAddress, getContract, getTotalSupply} from './WalletHandler';
 import MondrainERC721 from '../abis/avax/MondrainERC721.json';
 import MondrainLottery from '../abis/avax/MondrainLottery.json';
-//import "../scss/App.scss";
+import "../scss/App.scss";
 
 function waitForAccount() {
   console.log("checking account presence:" + window.ethereum._state.accounts)
@@ -142,7 +142,7 @@ class App extends Component {
           account={this.state.account} 
           explorerURL={this.state.explorerBaseURL + '/tokens/' + this.state.contractAddressERC721 + '/instance/'} 
           IPFSBaseURL={this.state.IPFSBaseURL} />
-         {this.state.tokens < Math.min(this.state.totalSupplyERC721, this.state.numberOfCarouselSlides) ? <div className="d-flex justify-content-center">
+         {this.state.tokens < Math.min(this.state.totalSupplyERC721, this.state.numberOfCarouselSlides) ? <div className="d-flex justify-content-center" style={{ height: '1000px' }}>
            <Spinner animation="border" role="status"/>
            </div> : <NFTCarousel tokens={this.state.tokens}/>}
         <Lottery winners={this.state.lotteryWinners}/>

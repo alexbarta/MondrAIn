@@ -8,13 +8,16 @@ import {
   faGithub
 } from '@fortawesome/free-brands-svg-icons'
 
-import { Container, Row, Col } from 'react-bootstrap'
+import { Container, Row, Col, Card } from 'react-bootstrap'
 
 class Social extends Component {
   render () {
     return (
-      <Container className='social' style={{ padding: '15px 25px' }}>
-        <Row xs='5' md='5' style={{ position: 'fixed', bottom: '5px', transform: 'translate(-50%, -50%)', left: '50%' }}>
+      <Card.Footer>
+{/*       <Container className='social' style={{ padding: '15px 25px' }}>
+        <Row xs='5' md='5' style={{ position: 'fixed', bottom: '5px', transform: 'translate(-50%, -50%)', left: '50%', background: 'white' }}> */}
+        <Container className='social'>
+          <Row xs='5' md='5' style={{ left: '50%', bottom: '5px' }}>
           <Col>
             <a href='https://twitter.com/Mondrainxyz' className='twitter social'>
               <FontAwesomeIcon icon={faTwitter} size='2x' />
@@ -42,6 +45,7 @@ class Social extends Component {
           </Col>
         </Row>
       </Container>
+      </Card.Footer>
     )
   }
 }

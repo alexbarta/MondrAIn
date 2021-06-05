@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {View, Text} from 'react-native';
 import { Navbar, Nav} from 'react-bootstrap';
 import About from './About';
-
+import Logo from '../img/mondrain_navbar_2.jpg';
 
 class TopNavbar extends Component {
     state = {
@@ -16,7 +16,7 @@ class TopNavbar extends Component {
     render() {
         return(
                 <Navbar>
-                    <Navbar.Brand href="#home">MondrAIn</Navbar.Brand>
+                    <Navbar.Brand href="#home"><img width="150px" height="auto" className="img-responsive" src={Logo}  alt="logo" /></Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Nav defaultActiveKey="#home" className="mr-auto">
                         {/* <Nav.Link >Home</Nav.Link> */}
