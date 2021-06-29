@@ -6,6 +6,7 @@
 
 html {
     background-image: url('../img/background_2_mondrian.svg');
+    background-size: cover;
 }
 
 body {
@@ -14,6 +15,11 @@ body {
 
 .root {
     background-image: url('../img/background_2_mondrian.svg');
+    background-size: cover;
+}
+
+.social {
+    color:aquamarine ! important;
 }
 
 /* .btn-primary {
@@ -42,8 +48,4 @@ body {
 .modal-content {
     background-color: #333;
     color: white;
-}
-
-.social {
-    color: black ! important;
-} */
+}*/

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Spinner} from 'react-bootstrap';
+import {Spinner, Row} from 'react-bootstrap';
 import AppErrorModal from './AppErrorModal';
 import TopNavbar from './TopNavbar';
 import TokenMinter from './TokenMinter';
@@ -109,7 +109,7 @@ class App extends Component {
     this.checkWalletPresence()
     if (window.ethereum) await this.loadBlockchainData()
     if (this.state.contractERC721 && this.state.totalSupplyERC721 > 0) await this.loadIPFSImageData()
-    await this.loadRewardedWinners()
+    if (this.state.contractERC721) await this.loadRewardedWinners()
   }
 
   getAccount = async () => {
@@ -135,17 +135,18 @@ class App extends Component {
         <AppErrorModal showModal={this.state.showWalletIsNotPresent} hideModal={this.selectModalWalletIsNotPresent} 
           text="Non-Ethereum browser detected. You should consider trying MetaMask!"/>
         <AppErrorModal showModal={this.state.showIsWrongNetwork} hideModal={this.selectModalIsWrongNetwork} 
-          text={["Currently, this website only operates with a dedicated blockchain testnet. ", <a href='https://docs.matic.network/docs/develop/metamask/testnet/' target='_blank'> Please configure Matic Mumbai testnet on your wallet</a>]}/>
+          text={["Currently, this website only operates with a dedicated blockchain testnet. ", <a href='https://docs.avax.network/build/tutorials/smart-contracts/deploy-a-smart-contract-on-avalanche-using-remix-and-metamask' target='_blank'> Please configure AVAX fuji testnet on your wallet</a>]}/>
         <TopNavbar handler={this.getAccount} address={this.state.account}/>
         <TokenMinter isWalletConnected={this.state.isWalletConnected} 
           contractERC721={this.state.contractERC721}
           account={this.state.account} 
           explorerURL={this.state.explorerBaseURL + '/tokens/' + this.state.contractAddressERC721 + '/instance/'} 
           IPFSBaseURL={this.state.IPFSBaseURL} />
-         {this.state.tokens < Math.min(this.state.totalSupplyERC721, this.state.numberOfCarouselSlides) ? <div className="d-flex justify-content-center" style={{ height: '1000px' }}>
+         {this.state.tokens < Math.min(this.state.totalSupplyERC721, this.state.numberOfCarouselSlides) || this.state.isWrongNetwork ? <div className="d-flex justify-content-center" style={{ height: '100px' }}>
            <Spinner animation="border" role="status"/>
            </div> : <NFTCarousel tokens={this.state.tokens}/>}
-        <Lottery winners={this.state.lotteryWinners}/>
+         {this.state.lotteryWinners.length === 0 ? <div className="d-flex justify-content-center" style={{'margin-top': '25px', 'margin-bottom': '400px', height: '100px' }}>
+           <Spinner animation="border" role="status"/></div> : <Lottery winners={this.state.lotteryWinners}/> }
         <Social explorerURL={this.state.explorerBaseURL} contractAddressERC721={this.state.contractAddressERC721}/>
       </div>
     );

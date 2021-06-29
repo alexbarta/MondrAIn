@@ -6,7 +6,7 @@ class NFTCarousel extends Component {
     return (
       <Container>
         <Row>
-          <Col className='col text-center'>
+          <Col className='col text-center' style={{'color': 'aquamarine'}}>
             <h2>Last Minted Tokens</h2>
           </Col>
         </Row>
